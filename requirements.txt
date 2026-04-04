@@ -1,0 +1,7 @@
+PyQt6>=6.6
+pulp>=2.8
+pandas>=2.0
+openpyxl>=3.1
+holidays>=0.46
+pyinstaller>=6.0
+pytest>=7.0
