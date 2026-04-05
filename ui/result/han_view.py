@@ -398,9 +398,15 @@ class HanView(QWidget):
         current_value = meta["value"]
 
         # 全職員の略称リスト
-        all_employees = db.get_all_employees()
-        all_names = [e["sur_name"] or e["employee_name"] for e in all_employees if e["sur_name"] or e["employee_name"]]
-        all_names = sorted(set(all_names))
+        # マスター順（employee_id順）で名前リストを構築
+        all_employees = db.get_all_employees()  # is_deleted=0 のみ、ID順
+        seen: set[str] = set()
+        all_names: list[str] = []
+        for e in all_employees:
+            name = e["sur_name"] or e["employee_name"] or ""
+            if name and name not in seen:
+                all_names.append(name)
+                seen.add(name)
 
         # 同日に既に配置済みの名前（自分自身は除外しない）
         used = set(used_names_per_day.get(day, set()))

@@ -49,6 +49,28 @@ def main() -> None:
         Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
     )
 
+    # タブ選択状態を色で明示するグローバルスタイル
+    app.setStyleSheet("""
+        QTabBar::tab {
+            background: #D8D8D8;
+            color: #555555;
+            padding: 6px 14px;
+            border: 1px solid #B0B0B0;
+            border-bottom: none;
+            margin-right: 2px;
+        }
+        QTabBar::tab:selected {
+            background: #FFFFFF;
+            color: #000000;
+            font-weight: bold;
+            border-color: #888888;
+            border-bottom: 2px solid #3A7EBF;
+        }
+        QTabBar::tab:hover:!selected {
+            background: #EBEBEB;
+        }
+    """)
+
     from ui.main_window import MainWindow
     window = MainWindow()
     window.show()

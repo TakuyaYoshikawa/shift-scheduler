@@ -107,7 +107,7 @@ class MonthlyGrid(QWidget):
     def refresh(self) -> None:
         self.title_label.setText(f"{self._year}年{self._month}月 月次シフト表")
         days = calendar.monthrange(self._year, self._month)[1]
-        employees = db.get_optimizer_target_employees()
+        employees = db.get_all_employees()
 
         results = db.get_shift_results(self._year, self._month)
         # {(employee_id, day): shift_code}
@@ -225,7 +225,7 @@ class MonthlyGrid(QWidget):
             return
         try:
             days = calendar.monthrange(self._year, self._month)[1]
-            employees = db.get_optimizer_target_employees()
+            employees = db.get_all_employees()
             results = db.get_shift_results(self._year, self._month)
             result_map: dict[tuple[int, int], str] = {
                 (r["employee_id"], r["assignment_day"]): r["shift_code"] or ""

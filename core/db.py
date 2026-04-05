@@ -88,7 +88,8 @@ CREATE TABLE IF NOT EXISTS employee_master (
     group_name      TEXT,
     work_hours      TEXT,
     is_optimizer_target INTEGER DEFAULT 1,
-    notes           TEXT
+    notes           TEXT,
+    is_deleted      INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS employee_shift_capability (
@@ -178,7 +179,19 @@ def init_db() -> None:
     """スキーマを初期化する。初回起動時に呼ぶ。"""
     with get_conn() as conn:
         conn.executescript(SCHEMA_SQL)
+        # マイグレーション: is_deleted 列が存在しない場合に追加
+        cols = [r[1] for r in conn.execute("PRAGMA table_info(employee_master)").fetchall()]
+        if "is_deleted" not in cols:
+            conn.execute("ALTER TABLE employee_master ADD COLUMN is_deleted INTEGER DEFAULT 0")
     logger.info("DBスキーマ初期化完了: %s", get_db_path())
+
+
+def next_employee_id() -> int:
+    """employee_master の MAX(employee_id)+1 を返す（論理削除済みも含む）。"""
+    with get_conn() as conn:
+        row = conn.execute("SELECT MAX(employee_id) FROM employee_master").fetchone()
+    max_id = row[0] if row and row[0] is not None else 0
+    return max_id + 1
 
 
 # ---------------------------------------------------------------------------
@@ -241,27 +254,32 @@ def delete_shift(shift_id: int) -> None:
 # ---------------------------------------------------------------------------
 
 
-def get_all_employees() -> list[dict[str, Any]]:
+def get_all_employees(include_deleted: bool = False) -> list[dict[str, Any]]:
     with get_conn() as conn:
-        rows = conn.execute(
-            "SELECT * FROM employee_master ORDER BY employee_id"
-        ).fetchall()
+        if include_deleted:
+            rows = conn.execute(
+                "SELECT * FROM employee_master ORDER BY employee_id"
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT * FROM employee_master WHERE is_deleted=0 ORDER BY employee_id"
+            ).fetchall()
     return [dict(r) for r in rows]
 
 
 def get_employee(employee_id: int) -> dict[str, Any] | None:
     with get_conn() as conn:
         row = conn.execute(
-            "SELECT * FROM employee_master WHERE employee_id=?", (employee_id,)
+            "SELECT * FROM employee_master WHERE employee_id=? AND is_deleted=0", (employee_id,)
         ).fetchone()
     return dict(row) if row else None
 
 
 def get_optimizer_target_employees() -> list[dict[str, Any]]:
-    """最適化対象の職員一覧を返す。"""
+    """最適化対象の職員一覧を返す（論理削除済みは除外）。"""
     with get_conn() as conn:
         rows = conn.execute(
-            "SELECT * FROM employee_master WHERE is_optimizer_target=1 ORDER BY employee_id"
+            "SELECT * FROM employee_master WHERE is_optimizer_target=1 AND is_deleted=0 ORDER BY employee_id"
         ).fetchall()
     return [dict(r) for r in rows]
 
@@ -304,8 +322,9 @@ def update_employee(employee_id: int, **kwargs: Any) -> None:
 
 
 def delete_employee(employee_id: int) -> None:
+    """論理削除（is_deleted=1 に設定。IDは保持してデータも残す）。"""
     with get_conn() as conn:
-        conn.execute("DELETE FROM employee_master WHERE employee_id=?", (employee_id,))
+        conn.execute("UPDATE employee_master SET is_deleted=1 WHERE employee_id=?", (employee_id,))
 
 
 # ---------------------------------------------------------------------------

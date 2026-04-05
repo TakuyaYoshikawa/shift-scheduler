@@ -135,7 +135,7 @@ class EmployeeDialog(QDialog):
         layout = QVBoxLayout(self)
         form = QFormLayout()
 
-        self.id_edit = QLineEdit()
+        self.id_label = QLabel()  # 追加時は自動採番、表示のみ
         self.name_edit = QLineEdit()
         self.surname_edit = QLineEdit()
         self.section_edit = QLineEdit()
@@ -145,7 +145,16 @@ class EmployeeDialog(QDialog):
         self.optimizer_check = QCheckBox("最適化対象")
         self.optimizer_check.setChecked(True)
 
-        form.addRow("ID:", self.id_edit)
+        # 追加時は自動採番、編集時は既存IDを表示
+        if self.employee_id is None:
+            next_id = db.next_employee_id()
+            self.id_label.setText(f"{next_id}（自動採番）")
+            self._auto_id = next_id
+        else:
+            self.id_label.setText(str(self.employee_id))
+            self._auto_id = self.employee_id
+
+        form.addRow("ID:", self.id_label)
         form.addRow("氏名:", self.name_edit)
         form.addRow("略称:", self.surname_edit)
         form.addRow("所属:", self.section_edit)
@@ -186,8 +195,8 @@ class EmployeeDialog(QDialog):
         emp = db.get_employee(employee_id)
         if not emp:
             return
-        self.id_edit.setText(str(emp["employee_id"]))
-        self.id_edit.setEnabled(False)
+        self.id_label.setText(str(emp["employee_id"]))
+        self._auto_id = emp["employee_id"]
         self.name_edit.setText(emp["employee_name"] or "")
         self.surname_edit.setText(emp["sur_name"] or "")
         self.section_edit.setText(emp["section"] or "")
@@ -201,11 +210,7 @@ class EmployeeDialog(QDialog):
             cb.setChecked(sid in caps)
 
     def _save(self) -> None:
-        try:
-            emp_id = int(self.id_edit.text())
-        except ValueError:
-            QMessageBox.warning(self, "エラー", "IDは数値で入力してください")
-            return
+        emp_id = self._auto_id
 
         name = self.name_edit.text().strip()
         if not name:
