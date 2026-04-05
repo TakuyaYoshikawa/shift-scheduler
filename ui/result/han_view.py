@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget,
     QTableWidgetItem, QLabel, QTabWidget, QHeaderView, QDialog,
-    QComboBox, QDialogButtonBox, QFormLayout,
+    QComboBox, QDialogButtonBox, QFormLayout, QFileDialog, QMessageBox,
 )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QBrush, QFont
@@ -132,6 +132,10 @@ class HanView(QWidget):
         self.title_label.setFont(QFont("Yu Gothic UI", 11, QFont.Weight.Bold))
         toolbar.addWidget(self.title_label)
         toolbar.addStretch()
+        btn_csv = QPushButton("CSVダウンロード")
+        btn_csv.clicked.connect(self._export_csv)
+        toolbar.addWidget(btn_csv)
+
         btn_refresh = QPushButton("更新")
         btn_refresh.clicked.connect(self.refresh)
         toolbar.addWidget(btn_refresh)
@@ -196,6 +200,71 @@ class HanView(QWidget):
             )
             label = f"第{week_idx + 1}週 ({week_start}〜{week_end}日)"
             self.week_tabs.addTab(table, label)
+
+    def _export_csv(self) -> None:
+        """班別配当表をCSVファイルに出力する（全週まとめて）。"""
+        import csv
+        default_name = f"班別配当表_{self._year}{self._month:02d}.csv"
+        path, _ = QFileDialog.getSaveFileName(
+            self, "CSVファイルを保存", default_name, "CSV ファイル (*.csv)"
+        )
+        if not path:
+            return
+        try:
+            days_in_month = calendar.monthrange(self._year, self._month)[1]
+            results = db.get_shift_results(self._year, self._month)
+            manual = db.get_manual_shifts(self._year, self._month)
+            shifts = db.get_all_shifts()
+            shift_map = {s["shift_id"]: s for s in shifts}
+
+            result_by_day_col: dict[tuple[int, str], list[str]] = {}
+            for r in results:
+                s = shift_map.get(r["shift_id"])
+                if not s:
+                    continue
+                col_label = shift_to_col_label(s["shift_name"], s["shift_code"])
+                key = (r["assignment_day"], col_label)
+                result_by_day_col.setdefault(key, []).append(r["sur_name"] or "")
+
+            manual_by_key: dict[tuple[int, int, str], str] = {
+                (m["assignment_day"], m["sub_row"], m["column_label"]): m["staff_name"] or ""
+                for m in manual
+            }
+
+            WEEKDAY_LABELS = ["月", "火", "水", "木", "金", "土", "日"]
+            with open(path, "w", newline="", encoding="utf-8-sig") as f:
+                writer = csv.writer(f)
+                weeks = self._calc_weeks(days_in_month)
+                for week_idx, (week_start, week_end) in enumerate(weeks):
+                    is_last_week = week_idx == len(weeks) - 1
+                    cols = COLS_WEEK_4 if is_last_week else COLS_WEEK_1_3
+                    col_labels = [label for label, _ in cols]
+
+                    writer.writerow([f"第{week_idx + 1}週 ({week_start}〜{week_end}日)"])
+                    # 日付ヘッダー
+                    header = ["日付", "サブ行"] + col_labels
+                    writer.writerow(header)
+
+                    for d in range(week_start, week_end + 1):
+                        dt = date(self._year, self._month, d)
+                        wd = WEEKDAY_LABELS[dt.weekday()]
+                        day_label = f"{d}({wd})"
+                        for sub_row in range(1, 4):
+                            row_data = [day_label if sub_row == 1 else "", str(sub_row)]
+                            for col_label in col_labels:
+                                if col_label in MANUAL_COL_LABELS:
+                                    val = manual_by_key.get((d, sub_row, col_label), "")
+                                else:
+                                    names = result_by_day_col.get((d, col_label), [])
+                                    val = names[sub_row - 1] if sub_row - 1 < len(names) else ""
+                                row_data.append(val)
+                            writer.writerow(row_data)
+                    writer.writerow([])  # 週の区切り空行
+
+            QMessageBox.information(self, "完了", f"CSVを保存しました:\n{path}")
+        except Exception as e:
+            logger.exception("CSV出力エラー")
+            QMessageBox.critical(self, "エラー", f"CSV出力に失敗しました:\n{e}")
 
     def _calc_weeks(self, days_in_month: int) -> list[tuple[int, int]]:
         starts = [1, 8, 15, 22]

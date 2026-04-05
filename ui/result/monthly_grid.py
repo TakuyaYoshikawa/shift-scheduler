@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget,
     QTableWidgetItem, QLabel, QHeaderView, QAbstractItemView,
+    QFileDialog, QMessageBox,
 )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QBrush, QFont
@@ -79,6 +80,10 @@ class MonthlyGrid(QWidget):
 
         self.badge_label = QLabel()
         toolbar.addWidget(self.badge_label)
+
+        btn_csv = QPushButton("CSVダウンロード")
+        btn_csv.clicked.connect(self._export_csv)
+        toolbar.addWidget(btn_csv)
 
         btn_refresh = QPushButton("更新")
         btn_refresh.clicked.connect(self.refresh)
@@ -208,6 +213,52 @@ class MonthlyGrid(QWidget):
         self.badge_label.setText("  ".join(badge_parts))
 
         self.table.resizeRowsToContents()
+
+    def _export_csv(self) -> None:
+        """月次シフト表をCSVファイルに出力する。"""
+        import csv
+        default_name = f"月次シフト表_{self._year}{self._month:02d}.csv"
+        path, _ = QFileDialog.getSaveFileName(
+            self, "CSVファイルを保存", default_name, "CSV ファイル (*.csv)"
+        )
+        if not path:
+            return
+        try:
+            days = calendar.monthrange(self._year, self._month)[1]
+            employees = db.get_optimizer_target_employees()
+            results = db.get_shift_results(self._year, self._month)
+            result_map: dict[tuple[int, int], str] = {
+                (r["employee_id"], r["assignment_day"]): r["shift_code"] or ""
+                for r in results
+            }
+            WEEKDAY_LABELS = ["月", "火", "水", "木", "金", "土", "日"]
+            with open(path, "w", newline="", encoding="utf-8-sig") as f:
+                writer = csv.writer(f)
+                # ヘッダー行1: 日付
+                header_day = ["氏名"] + [str(d) for d in range(1, days + 1)] + ["計"]
+                # ヘッダー行2: 曜日
+                header_wd = [""] + [
+                    WEEKDAY_LABELS[date(self._year, self._month, d).weekday()]
+                    for d in range(1, days + 1)
+                ] + [""]
+                writer.writerow(header_day)
+                writer.writerow(header_wd)
+                for emp in employees:
+                    emp_id = emp["employee_id"]
+                    name = emp["sur_name"] or emp["employee_name"] or ""
+                    row_data = [name]
+                    workdays = 0
+                    for d in range(1, days + 1):
+                        code = result_map.get((emp_id, d), "")
+                        row_data.append(code)
+                        if code:
+                            workdays += 1
+                    row_data.append(str(workdays))
+                    writer.writerow(row_data)
+            QMessageBox.information(self, "完了", f"CSVを保存しました:\n{path}")
+        except Exception as e:
+            logger.exception("CSV出力エラー")
+            QMessageBox.critical(self, "エラー", f"CSV出力に失敗しました:\n{e}")
 
     def _on_cell_clicked(self, row: int, col: int) -> None:
         """セルクリック時に手動調整パネルを開く。"""

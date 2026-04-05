@@ -159,6 +159,15 @@ class MainWindow(QMainWindow):
         if hasattr(self, "history_view"):
             self.history_view.set_year_month(self._current_year, self._current_month)
 
+    def refresh_result_views(self) -> None:
+        """シフト確認・調整タブの全ビューを更新する（自動作成完了後に呼ぶ）。"""
+        if hasattr(self, "monthly_grid"):
+            self.monthly_grid.refresh()
+        if hasattr(self, "han_view"):
+            self.han_view.refresh()
+        if hasattr(self, "history_view"):
+            self.history_view.refresh()
+
     def get_year_month(self) -> tuple[int, int]:
         """現在選択中の年月を返す。"""
         return self._current_year, self._current_month

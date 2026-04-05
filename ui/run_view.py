@@ -216,6 +216,8 @@ class RunView(QWidget):
         self._log(f"\n{'✅' if is_optimal else '⚠️'} {message}")
         self._reset_buttons()
         self.main_window.log(message)
+        # 全ビューを更新
+        self.main_window.refresh_result_views()
         QMessageBox.information(
             self,
             "完了",
