@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import calendar
 import logging
+import os
 import sys
 from datetime import date
 from pathlib import Path
@@ -23,6 +24,19 @@ logger = logging.getLogger(__name__)
 _HERE = Path(__file__).resolve().parent.parent
 if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
+
+
+def _cbc_path() -> str:
+    """PyInstaller exe 内でも CBC バイナリのパスを解決する。"""
+    # PyInstaller の _MEIPASS に同梱した cbc.exe を優先
+    base = getattr(sys, "_MEIPASS", None)
+    if base:
+        cbc = os.path.join(base, "cbc.exe")
+        if os.path.exists(cbc):
+            return cbc
+    # 通常実行: pulp のデフォルトパスを使用
+    import pulp
+    return pulp.apis.PULP_CBC_CMD().path
 
 
 # ペナルティ・重みの定数
@@ -388,7 +402,7 @@ class ShiftScheduler:
         self._log("PuLP 最適化実行中...")
         self._log(f"変数数: {len(problem.variables())}, 制約数: {len(problem.constraints)}")
 
-        solver = pulp.PULP_CBC_CMD(timeLimit=self.time_limit, msg=0)
+        solver = pulp.PULP_CBC_CMD(path=_cbc_path(), timeLimit=self.time_limit, msg=0)
         problem.solve(solver)
 
         status_str = pulp.LpStatus[problem.status]

@@ -7,8 +7,10 @@ __pycache__/
 *.db-wal
 dist/
 build/
-*.spec
+# *.spec
 logs/
 .venv/
 venv/
 *.egg-info/
+dist/
+build/
