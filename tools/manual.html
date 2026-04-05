@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<style>
+  body {
+    font-family: "Yu Gothic UI", "Meiryo", sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.7;
+    color: #222;
+    margin: 0;
+    padding: 0;
+  }
+  h1 {
+    font-size: 18pt;
+    color: #1a4f8a;
+    border-bottom: 3px solid #1a4f8a;
+    padding-bottom: 6px;
+    margin-top: 0;
+  }
+  h2 {
+    font-size: 13pt;
+    color: #1a4f8a;
+    border-left: 5px solid #1a4f8a;
+    padding-left: 8px;
+    margin-top: 24px;
+  }
+  h3 {
+    font-size: 11pt;
+    color: #2a5f9a;
+    margin-top: 16px;
+    margin-bottom: 4px;
+  }
+  p { margin: 6px 0 10px 0; }
+  ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+  li { margin-bottom: 4px; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0 16px 0;
+    font-size: 10pt;
+  }
+  th {
+    background: #1a4f8a;
+    color: #fff;
+    padding: 6px 10px;
+    text-align: left;
+  }
+  td {
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: #f0f4fa; }
+  .note {
+    background: #fff8e1;
+    border-left: 4px solid #f5a623;
+    padding: 8px 12px;
+    margin: 10px 0;
+    font-size: 10pt;
+  }
+  .tip {
+    background: #e8f5e9;
+    border-left: 4px solid #43a047;
+    padding: 8px 12px;
+    margin: 10px 0;
+    font-size: 10pt;
+  }
+  .step {
+    background: #e3f2fd;
+    border-left: 4px solid #1a4f8a;
+    padding: 8px 12px;
+    margin: 10px 0;
+    font-size: 10pt;
+  }
+  .page-break { page-break-before: always; }
+  .cover {
+    text-align: center;
+    padding-top: 80px;
+  }
+  .cover h1 {
+    font-size: 24pt;
+    border: none;
+    padding-bottom: 0;
+  }
+  .cover p {
+    font-size: 11pt;
+    color: #555;
+    margin-top: 20px;
+  }
+  code {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    padding: 1px 4px;
+    font-family: "Consolas", monospace;
+    font-size: 9.5pt;
+  }
+</style>
+</head>
+<body>
+
+<!-- 表紙 -->
+<div class="cover">
+  <h1>シフト自動作成システム</h1>
+  <h1 style="font-size:16pt; color:#444; border:none;">操作マニュアル</h1>
+  <p>社会福祉法人 ピア宮敷 様 向け</p>
+  <p>作成日：2026年4月</p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- 目次 -->
+<h1>目次</h1>
+<ol>
+  <li>このシステムでできること</li>
+  <li>インストール・起動方法</li>
+  <li>画面の基本構成</li>
+  <li>マスタ管理（職員・シフト種別の登録）</li>
+  <li>希望シフト入力</li>
+  <li>シフトの自動作成</li>
+  <li>シフトの確認・修正</li>
+  <li>CSV ファイルの出力</li>
+  <li>データのバックアップ</li>
+  <li>よくある質問・困ったときは</li>
+</ol>
+
+<div class="page-break"></div>
+
+<!-- 1. できること -->
+<h1>1. このシステムでできること</h1>
+<p>
+このシステムは、毎月のシフト作成作業をコンピューターが自動的に行うためのツールです。
+これまで Excel で行っていた作業を、このシステム上で完結できます。
+</p>
+
+<table>
+  <tr><th>機能</th><th>内容</th></tr>
+  <tr><td>職員マスタ管理</td><td>職員の氏名・担当シフトなどの基本情報を登録・編集します</td></tr>
+  <tr><td>希望シフト入力</td><td>各職員の月ごとの希望シフト・休暇希望を入力します</td></tr>
+  <tr><td>シフト自動作成</td><td>希望と制約条件を考慮して、最適なシフト表を自動で作成します</td></tr>
+  <tr><td>シフト確認・修正</td><td>作成されたシフトを確認し、手動で細かく調整します</td></tr>
+  <tr><td>CSV 出力</td><td>シフト表を CSV ファイルとして保存できます</td></tr>
+  <tr><td>自動バックアップ</td><td>起動するたびにデータを自動的に保存します（最新7世代）</td></tr>
+</table>
+
+<div class="note">
+<strong>ご注意：</strong>このシステムはインターネット接続が不要です。データはこのパソコン内に保存されます。
+</div>
+
+<div class="page-break"></div>
+
+<!-- 2. インストール・起動 -->
+<h1>2. インストール・起動方法</h1>
+
+<h2>2-1. インストール手順</h2>
+
+<div class="step">
+<strong>手順1：</strong>受け取った ZIP ファイル（<code>shift_scheduler.zip</code>）を、デスクトップなど好きな場所に置きます。
+</div>
+<div class="step">
+<strong>手順2：</strong>ZIP ファイルを右クリックし、「すべて展開」→「展開」をクリックします。
+</div>
+<div class="step">
+<strong>手順3：</strong>展開されたフォルダ（<code>shift_scheduler</code>）の中にある <code>shift_scheduler.exe</code> をダブルクリックして起動します。
+</div>
+
+<div class="tip">
+<strong>便利な使い方：</strong><code>shift_scheduler.exe</code> を右クリック→「スタートメニューにピン留めする」または「ショートカットの作成」をすると、次回から素早く起動できます。
+</div>
+
+<h2>2-2. 初回起動時の注意</h2>
+<p>
+Windows の「保護のため PC が保護されました」という画面が表示された場合は、
+「詳細情報」→「実行」をクリックしてください。
+これは初めて起動するアプリに表示される Windows の確認画面です。
+</p>
+
+<div class="note">
+データファイル（シフトデータベース）は自動的に作成されます。フォルダ内のファイルを手動で移動・削除しないでください。
+</div>
+
+<div class="page-break"></div>
+
+<!-- 3. 画面の基本構成 -->
+<h1>3. 画面の基本構成</h1>
+<p>起動すると以下のような画面が表示されます。</p>
+
+<table>
+  <tr><th>エリア</th><th>場所</th><th>内容</th></tr>
+  <tr><td>年月セレクタ</td><td>画面上部</td><td>対象となる年・月を選択します</td></tr>
+  <tr><td>タブ</td><td>中央上部</td><td>4つのメイン機能を切り替えます</td></tr>
+  <tr><td>コンテンツエリア</td><td>中央</td><td>選択したタブの内容が表示されます</td></tr>
+  <tr><td>ログエリア</td><td>画面下部</td><td>操作の記録が表示されます</td></tr>
+</table>
+
+<h3>メインタブの構成</h3>
+<table>
+  <tr><th>タブ名</th><th>主な用途</th></tr>
+  <tr><td>マスタ管理</td><td>職員情報・シフト種別の登録・編集</td></tr>
+  <tr><td>希望シフト入力</td><td>職員ごとの希望シフトを入力</td></tr>
+  <tr><td>自動作成実行</td><td>シフト表を自動的に作成する</td></tr>
+  <tr><td>シフト確認・調整</td><td>作成結果の確認・手動修正・出力</td></tr>
+</table>
+
+<div class="tip">
+<strong>ポイント：</strong>現在選択中のタブは白い背景・青い下線で表示されます。
+</div>
+
+<h2>3-1. 年月の切り替え方法</h2>
+<p>
+画面右上の「年」「月」の数字部分をクリックして上下矢印を押すか、直接数字を入力すると切り替わります。
+切り替えると、すべての画面の表示が選択した年月に自動的に更新されます。
+</p>
+
+<div class="page-break"></div>
+
+<!-- 4. マスタ管理 -->
+<h1>4. マスタ管理（職員・シフト種別の登録）</h1>
+<p>「マスタ管理」タブには「職員マスタ」「シフト種別」「履歴インポート」の3つのサブタブがあります。</p>
+
+<h2>4-1. 職員マスタ</h2>
+<p>職員の基本情報を管理します。</p>
+
+<h3>職員を追加する</h3>
+<ol>
+  <li>「職員マスタ」タブを開きます</li>
+  <li>「＋ 追加」ボタンをクリックします</li>
+  <li>氏名・略称・所属・班などを入力します</li>
+  <li>担当可能なシフトのチェックボックスをオンにします</li>
+  <li>「保存」をクリックします</li>
+</ol>
+
+<div class="note">
+<strong>ID について：</strong>職員 ID は自動的に割り当てられます。手動で入力する必要はありません。
+</div>
+
+<h3>職員情報を編集する</h3>
+<ol>
+  <li>一覧から編集したい職員を選択（クリック）します</li>
+  <li>「✏ 編集」ボタンをクリックします</li>
+  <li>内容を変更して「保存」をクリックします</li>
+</ol>
+
+<h3>職員を削除する</h3>
+<ol>
+  <li>一覧から削除したい職員を選択します</li>
+  <li>「🗑 削除」ボタンをクリックします</li>
+  <li>確認画面で「はい」をクリックします</li>
+</ol>
+
+<div class="note">
+<strong>削除について：</strong>削除した職員のデータは画面上から非表示になりますが、システム内にデータは保持されます。過去のシフト実績などに影響を与えません。
+</div>
+
+<h2>4-2. シフト種別</h2>
+<p>
+シフトの種類（早番・遅番・夜勤など）の一覧を確認できます。
+通常の運用では変更の必要はありません。
+</p>
+
+<div class="page-break"></div>
+
+<!-- 5. 希望シフト入力 -->
+<h1>5. 希望シフト入力</h1>
+<p>
+職員ごとに、その月の希望シフトや休暇希望を入力します。
+自動作成の前に入力しておくと、希望が反映されたシフトが作成されます。
+</p>
+
+<h2>5-1. 画面の見方</h2>
+<p>縦方向に職員名、横方向に日付が並んだ表形式で表示されます。</p>
+<table>
+  <tr><th>表示色</th><th>意味</th></tr>
+  <tr><td>薄い赤</td><td>日曜日・祝日</td></tr>
+  <tr><td>薄い青</td><td>土曜日</td></tr>
+  <tr><td>シフト色（紫・青など）</td><td>入力済みのシフト</td></tr>
+</table>
+
+<h2>5-2. 希望シフトを入力する</h2>
+<ol>
+  <li>画面上部で対象の年月を選択します</li>
+  <li>入力したいセル（職員名 × 日付の交差点）をクリックします</li>
+  <li>表示されたドロップダウンからシフト種別または「休暇」を選択します</li>
+  <li>入力が完了したら「保存」ボタンをクリックします</li>
+</ol>
+
+<div class="tip">
+<strong>ポイント：</strong>入力内容は「保存」ボタンを押すまで確定されません。作業の途中でこまめに保存することをおすすめします。
+</div>
+
+<h2>5-3. 入力内容を取り消す</h2>
+<p>入力済みのセルをクリックし、ドロップダウンで「（空白）」を選択して保存すると、入力を取り消せます。</p>
+
+<div class="page-break"></div>
+
+<!-- 6. シフト自動作成 -->
+<h1>6. シフトの自動作成</h1>
+<p>
+「自動作成実行」タブで、対象月のシフト表を自動的に作成します。
+希望シフト入力が終わった後に実行してください。
+</p>
+
+<h2>6-1. 実行前の確認事項</h2>
+<ul>
+  <li>対象月の年月が正しく設定されているか確認します</li>
+  <li>希望シフト入力が保存済みであることを確認します</li>
+</ul>
+
+<h2>6-2. 自動作成の手順</h2>
+<div class="step">
+<strong>手順1：</strong>「自動作成実行」タブをクリックします。
+</div>
+<div class="step">
+<strong>手順2：</strong>画面の内容（職員数・希望入力状況など）を確認します。
+</div>
+<div class="step">
+<strong>手順3：</strong>「▶ シフト自動作成を実行」ボタンをクリックします。
+</div>
+<div class="step">
+<strong>手順4：</strong>画面下部のログに進捗が表示されます。完了まで最大2分ほどかかる場合があります。
+</div>
+<div class="step">
+<strong>手順5：</strong>「最適解が得られました」というメッセージが表示されたら完了です。「OK」をクリックすると、シフト確認・調整タブに自動的に結果が表示されます。
+</div>
+
+<div class="note">
+<strong>実行中の注意：</strong>処理中はボタンが無効になります。完了するまでそのままお待ちください。
+</div>
+
+<div class="tip">
+<strong>暫定解について：</strong>「暫定解で採用しました」と表示された場合も、シフト表は作成されています。その後「シフト確認・調整」タブで夜勤が2名未満の日（赤表示）などを確認し、手動で修正してください。
+</div>
+
+<div class="page-break"></div>
+
+<!-- 7. シフト確認・調整 -->
+<h1>7. シフトの確認・修正</h1>
+<p>「シフト確認・調整」タブには「月次シフト表」「班別配当表」「修正履歴」の3つのサブタブがあります。</p>
+
+<h2>7-1. 月次シフト表</h2>
+<p>職員ごとのシフトを一覧で確認できます。</p>
+
+<table>
+  <tr><th>表示</th><th>意味</th></tr>
+  <tr><td>紫色の文字</td><td>手動で修正済みのセル</td></tr>
+  <tr><td>赤背景</td><td>制約違反（夜勤が不足しているなど）</td></tr>
+  <tr><td>画面下部の「夜勤計」行</td><td>その日の夜勤配置人数（赤字は2名未満で要確認）</td></tr>
+</table>
+
+<h3>手動でシフトを修正する</h3>
+<ol>
+  <li>修正したいセルをクリックします</li>
+  <li>「手動調整」パネルが開きます</li>
+  <li>「変更後」のドロップダウンから新しいシフトを選択します</li>
+  <li>制約チェックの結果（✓/✗）を確認します</li>
+  <li>問題がなければ「この変更を適用」をクリックします</li>
+</ol>
+
+<div class="note">
+<strong>制約チェックについて：</strong>変更後のシフトが問題あり（✗が表示）の場合、「この変更を適用」ボタンが押せません。問題のない選択肢を選んでください。
+</div>
+
+<h2>7-2. 班別配当表</h2>
+<p>班ごとのシフト配当を週単位で確認できます。第1週〜第4週のタブで切り替えます。</p>
+
+<h3>セルに名前を入力する</h3>
+<ol>
+  <li>入力したいセルをクリックします</li>
+  <li>職員を選択するダイアログが開きます</li>
+  <li>ドロップダウンから職員名を選択して「OK」をクリックします</li>
+</ol>
+
+<div class="tip">
+<strong>ポイント：</strong>同じ日に同じ職員を複数のセルに割り当てることはできません（グレーアウトで表示されます）。
+</div>
+
+<h2>7-3. 修正履歴</h2>
+<p>自動作成後に行った手動修正の履歴が一覧で表示されます。</p>
+<p>「すべて取り消し」ボタンをクリックすると、手動修正をすべて取り消し、自動作成直後の状態に戻すことができます。</p>
+
+<div class="page-break"></div>
+
+<!-- 8. CSV出力 -->
+<h1>8. CSV ファイルの出力</h1>
+<p>シフト表を CSV ファイルとして保存できます。Excel で開いて印刷・共有することができます。</p>
+
+<h2>8-1. 月次シフト表を出力する</h2>
+<ol>
+  <li>「シフト確認・調整」→「月次シフト表」タブを開きます</li>
+  <li>「CSV ダウンロード」ボタンをクリックします</li>
+  <li>保存先とファイル名を確認して「保存」をクリックします</li>
+</ol>
+<p>出力ファイル名の例：<code>月次シフト表_202604.csv</code></p>
+
+<h2>8-2. 班別配当表を出力する</h2>
+<ol>
+  <li>「シフト確認・調整」→「班別配当表」タブを開きます</li>
+  <li>「CSV ダウンロード」ボタンをクリックします</li>
+  <li>保存先とファイル名を確認して「保存」をクリックします</li>
+</ol>
+<p>出力ファイル名の例：<code>班別配当表_202604.csv</code></p>
+
+<div class="tip">
+<strong>Excel で開く際のポイント：</strong>CSV ファイルをダブルクリックすると Excel で開けます。文字化けする場合は、Excel の「データ」タブ→「テキストまたは CSV から」を使い、文字コードに「UTF-8」を選択してください。
+</div>
+
+<div class="page-break"></div>
+
+<!-- 9. バックアップ -->
+<h1>9. データのバックアップ</h1>
+
+<h2>9-1. 自動バックアップ</h2>
+<p>
+システムを起動するたびに、データが自動的にバックアップされます。
+最新の7世代分が保存されており、古いものは自動的に削除されます。
+</p>
+<p>バックアップの保存場所：</p>
+<p><code>C:&#92;Users&#92;（ユーザー名）&#92;AppData&#92;Local&#92;ShiftScheduler&#92;backup&#92;</code></p>
+
+<div class="note">
+<strong>AppData フォルダについて：</strong>AppData フォルダは通常は非表示です。エクスプローラーのアドレスバーに上記パスをそのまま貼り付けると開けます。
+</div>
+
+<h2>9-2. 手動バックアップ（推奨）</h2>
+<p>
+重要な作業の前後には、データファイルを手動でコピーしておくことをおすすめします。
+</p>
+<p>データファイルの場所：</p>
+<p><code>C:&#92;Users&#92;（ユーザー名）&#92;AppData&#92;Local&#92;ShiftScheduler&#92;shift_scheduler.db</code></p>
+<p>このファイルを USB メモリや共有フォルダにコピーしてください。</p>
+
+<div class="page-break"></div>
+
+<!-- 10. よくある質問 -->
+<h1>10. よくある質問・困ったときは</h1>
+
+<h2>Q. 起動時に「Windows によって PC が保護されました」と表示される</h2>
+<p><strong>A.</strong> 「詳細情報」をクリックし、次に「実行」をクリックしてください。初回起動時のみ表示されます。</p>
+
+<h2>Q. 自動作成を実行したがシフトがほとんど埋まっていない</h2>
+<p><strong>A.</strong> 希望シフトの入力が少ない場合に起こることがあります。希望シフト入力で多くの職員の希望を入力した後、再度実行してみてください。</p>
+
+<h2>Q. 「暫定解で採用しました」と表示された</h2>
+<p><strong>A.</strong> シフトは作成されています。「シフト確認・調整」タブで夜勤が2名未満の日（赤表示）などを確認し、手動で修正してください。</p>
+
+<h2>Q. 手動で修正したが元に戻したい</h2>
+<p><strong>A.</strong> 「シフト確認・調整」→「修正履歴」タブの「すべて取り消し」ボタンで、自動作成直後の状態に戻せます。</p>
+
+<h2>Q. 職員を誤って削除してしまった</h2>
+<p><strong>A.</strong> 削除した職員のデータはシステム内に保持されています。管理者に連絡してデータの復旧を依頼してください。</p>
+
+<h2>Q. 画面の動作が遅い・フリーズした</h2>
+<p><strong>A.</strong> 自動作成の実行中は最大2分ほどかかります。実行中以外で動作が遅い場合は、一度アプリを終了して再起動してください。</p>
+
+<h2>Q. データが消えてしまった</h2>
+<p><strong>A.</strong> 自動バックアップから復旧できる場合があります。
+<code>AppData&#92;Local&#92;ShiftScheduler&#92;backup&#92;</code> フォルダ内の最新の <code>.db</code> ファイルを
+<code>AppData&#92;Local&#92;ShiftScheduler&#92;shift_scheduler.db</code> にコピーしてください。</p>
+
+<hr>
+<p style="text-align:center; color:#888; font-size:9pt; margin-top:30px;">
+シフト自動作成システム 操作マニュアル　Ver.1.0　2026年4月
+</p>
+
+</body>
+</html>
