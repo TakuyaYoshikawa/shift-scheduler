@@ -168,16 +168,35 @@ class ShiftScheduler:
         problem = pulp.LpProblem(f"ShiftSchedule_{self.year}_{self.month}", pulp.LpMaximize)
 
         # 決定変数: shift[d][e][s] ∈ {0, 1}
+        # 担当不可の (e, s) は定数 0 にして変数を作らない（H7不要・変数数大幅削減）
         self._log("決定変数定義中...")
-        shift: dict[int, dict[int, dict[int, pulp.LpVariable]]] = {}
+        # 職員ごとの有効シフトセット（希望申請コードも含む）
+        valid_shifts_for: dict[int, set[int]] = {}
+        for e in list_employee:
+            caps = set(capabilities[e]) | {20, 21}  # Y/Ⓑは全員開放
+            # 希望申請シフトも有効とする
+            for (eid, _), req_code in requests.items():
+                if eid == e and req_code and req_code != "休暇":
+                    for sid in code_to_ids.get(req_code, []):
+                        caps.add(sid)
+            valid_shifts_for[e] = caps & set(list_shift)
+
+        # shift[d][e][s]: 有効なら LpVariable、無効なら定数 0
+        ShiftVal = pulp.LpVariable | int
+        shift: dict[int, dict[int, dict[int, ShiftVal]]] = {}
+        var_count = 0
         for d in list_day:
             shift[d] = {}
             for e in list_employee:
                 shift[d][e] = {}
+                valid = valid_shifts_for[e]
                 for s in list_shift:
-                    shift[d][e][s] = pulp.LpVariable(
-                        f"x_{d}_{e}_{s}", cat="Binary"
-                    )
+                    if s in valid:
+                        shift[d][e][s] = pulp.LpVariable(f"x_{d}_{e}_{s}", cat="Binary")
+                        var_count += 1
+                    else:
+                        shift[d][e][s] = 0
+        self._log(f"変数作成: {var_count}個（全体の{var_count*100//(len(list_day)*len(list_employee)*len(list_shift))}%）")
 
         # 希望未充足スラック変数
         slack: dict[tuple[int, int], pulp.LpVariable] = {}
@@ -244,20 +263,7 @@ class ShiftScheduler:
                     pulp.lpSum(shift[day][emp_id][s] for s in list_shift) == 0
                 ), f"h6_holiday_{emp_id}_{day}"
 
-        # H7: 担当可能パターン制限（Y/B2は全員に開放）
-        for d in list_day:
-            for e in list_employee:
-                for s in list_shift:
-                    if s in (20, 21):
-                        continue  # 夜勤・宿直は全員に開放
-                    if s not in capabilities[e]:
-                        # 希望申請済みの場合も制限しない
-                        req_code = requests.get((e, d))
-                        if req_code and req_code != "休暇":
-                            req_shift_ids = code_to_ids.get(req_code, [])
-                            if s in req_shift_ids:
-                                continue
-                        problem += shift[d][e][s] == 0, f"h7_cap_{d}_{e}_{s}"
+        # H7: 変数作成時に担当不可は定数0としたため制約不要
 
         # H8: 同日禁止ペア
         for d in list_day:
@@ -322,20 +328,17 @@ class ShiftScheduler:
                 if d in list_day and e in list_employee and s in list_shift:
                     score_terms.append(sc * shift[d][e][s])
 
-        # (3) 夜勤ペアボーナス
+        # (3) 夜勤ペアボーナス（履歴がある場合のみ・変数追加を最小化）
+        emp_set = set(list_employee)
         for (e1, e2), bonus in yakkin_pair_bonus.items():
-            if e1 in list_employee and e2 in list_employee:
+            if e1 in emp_set and e2 in emp_set and bonus > 0:
                 for d in list_day:
                     pair_var = pulp.LpVariable(f"ypair_{d}_{e1}_{e2}", cat="Binary")
                     problem += pair_var <= shift[d][e1][20], f"yp1_{d}_{e1}_{e2}"
                     problem += pair_var <= shift[d][e2][20], f"yp2_{d}_{e1}_{e2}"
                     score_terms.append(bonus * pair_var)
 
-        # (4) 初期値（不要な配置を抑制）
-        for d in list_day:
-            for e in list_employee:
-                for s in list_shift:
-                    score_terms.append(SCORE_INITIAL * shift[d][e][s])
+        # ※ SCORE_INITIAL(-50×全変数) は削除。公平性ペナルティで過剰配置を抑制する。
 
         # ペナルティ項
         penalty_terms = []

@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):
         self.year_spin = QSpinBox()
         self.year_spin.setRange(2020, 2035)
         self.year_spin.setValue(self._current_year)
-        self.year_spin.setFixedWidth(70)
+        self.year_spin.setFixedWidth(90)
         self.year_spin.valueChanged.connect(self._on_year_month_changed)
         layout.addWidget(self.year_spin)
 
@@ -98,7 +98,7 @@ class MainWindow(QMainWindow):
         self.month_spin = QSpinBox()
         self.month_spin.setRange(1, 12)
         self.month_spin.setValue(self._current_month)
-        self.month_spin.setFixedWidth(50)
+        self.month_spin.setFixedWidth(90)
         self.month_spin.valueChanged.connect(self._on_year_month_changed)
         layout.addWidget(self.month_spin)
 
