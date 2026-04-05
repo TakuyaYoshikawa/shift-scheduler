@@ -231,4 +231,6 @@ class RunView(QWidget):
         from datetime import datetime
         ts = datetime.now().strftime("%H:%M:%S")
         self.log_area.append(f"[{ts}] {msg}")
-        logger.info(msg)
+        # cp932環境でUnicodeEncodeErrorが出ないようASCII安全な文字列でログ
+        safe_msg = msg.encode("cp932", errors="replace").decode("cp932")
+        logger.info(safe_msg)
