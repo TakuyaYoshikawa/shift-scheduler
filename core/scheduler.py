@@ -285,6 +285,17 @@ class ShiftScheduler:
                 + slack[(emp_id, day)] >= 1
             ), f"soft_req_{emp_id}_{day}"
 
+        # 最低出勤日数ソフト制約: 下回った分をペナルティ（実績・希望なしでもシフトを埋める）
+        # 1ヶ月の稼働日から夜勤拘束(Y+Ⓑ+休)を考慮した推定値を下限とする
+        days_in_month_val = len(list_day)
+        min_workdays_target = max(10, days_in_month_val - 12)  # 最低10日、通常は19〜20日程度
+        underwork_penalty_weight = 80  # 1日不足あたりのペナルティ（SCORE_INITIAL絶対値より大きく）
+        underwork_vars: list[pulp.LpVariable] = []
+        for e in list_employee:
+            uw = pulp.LpVariable(f"uw_{e}", lowBound=0)
+            problem += uw >= min_workdays_target - workdays[e], f"uw_c_{e}"
+            underwork_vars.append(uw)
+
         # 公平性: workdays の最大・最小
         for e in list_employee:
             problem += max_workdays >= workdays[e], f"fair_max_{e}"
@@ -338,7 +349,14 @@ class ShiftScheduler:
                     problem += pair_var <= shift[d][e2][20], f"yp2_{d}_{e1}_{e2}"
                     score_terms.append(bonus * pair_var)
 
-        # ※ SCORE_INITIAL(-50×全変数) は削除。公平性ペナルティで過剰配置を抑制する。
+        # (4) 基本スコア: 有効な変数（担当可能シフト）にのみ適用
+        # 変数数削減後なので項目数は大幅に少ない
+        for d in list_day:
+            for e in list_employee:
+                for s in valid_shifts_for[e]:
+                    v = shift[d][e][s]
+                    if isinstance(v, pulp.LpVariable):
+                        score_terms.append(SCORE_INITIAL * v)
 
         # ペナルティ項
         penalty_terms = []
@@ -350,6 +368,10 @@ class ShiftScheduler:
         # 夜勤インターバルペナルティ
         for tc_var in too_close_vars:
             penalty_terms.append(PENALTY_YAKKIN_INTERVAL * tc_var)
+
+        # 最低出勤日数未達ペナルティ
+        for uw in underwork_vars:
+            penalty_terms.append(underwork_penalty_weight * uw)
 
         # 公平性ペナルティ
         fairness_term = WEIGHT_FAIRNESS * (max_workdays - min_workdays)
