@@ -113,7 +113,7 @@ class RequestView(QWidget):
     def _load_grid(self) -> None:
         self.title_label.setText(f"{self._year}年{self._month}月 希望シフト入力")
         days = calendar.monthrange(self._year, self._month)[1]
-        employees = db.get_optimizer_target_employees()
+        employees = db.get_all_employees()
 
         # 既存の希望データ
         submitted = db.get_submitted_requests(self._year, self._month)
@@ -303,7 +303,7 @@ class RequestView(QWidget):
             return
 
         days = self._days
-        employees = db.get_optimizer_target_employees()
+        employees = db.get_all_employees()
         submitted = db.get_submitted_requests(self._year, self._month)
         req_map = {(r["employee_id"], r["day"]): r["request"] for r in submitted}
 
