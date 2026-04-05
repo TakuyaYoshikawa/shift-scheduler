@@ -105,23 +105,23 @@ def resolve_nickname(raw: str) -> str | None:
 SHIFT_MASTER_SEED: list[dict[str, Any]] = [
     # 戸外班
     {"shift_id": 1,  "shift_name": "戸外班", "shift_code": "A",  "time_start": "15:30", "time_end": "09:30", "color_hex": "#D4A0A0"},
-    {"shift_id": 2,  "shift_name": "戸外班", "shift_code": "B1", "time_start": "07:00", "time_end": "16:00", "color_hex": "#A0B4D4"},
-    {"shift_id": 3,  "shift_name": "戸外班", "shift_code": "C1", "time_start": "10:00", "time_end": "19:00", "color_hex": "#A0D4A0"},
-    {"shift_id": 4,  "shift_name": "戸外班", "shift_code": "C2", "time_start": "11:00", "time_end": "20:00", "color_hex": "#B4D4A0"},
+    {"shift_id": 2,  "shift_name": "戸外班", "shift_code": "B",  "time_start": "07:00", "time_end": "16:00", "color_hex": "#A0B4D4"},
+    {"shift_id": 3,  "shift_name": "戸外班", "shift_code": "C",  "time_start": "10:00", "time_end": "19:00", "color_hex": "#A0D4A0"},
+    {"shift_id": 4,  "shift_name": "戸外班", "shift_code": "Ⓒ",  "time_start": "11:00", "time_end": "20:00", "color_hex": "#B4D4A0"},
     {"shift_id": 5,  "shift_name": "戸外班", "shift_code": "DG", "time_start": "08:30", "time_end": "17:30", "color_hex": "#D4D4A0"},
     {"shift_id": 6,  "shift_name": "戸外班", "shift_code": "P",  "time_start": None,    "time_end": None,    "color_hex": "#D4D4D4"},
     # 生活班1
     {"shift_id": 7,  "shift_name": "生活班1", "shift_code": "A",  "time_start": "15:30", "time_end": "09:30", "color_hex": "#D4A0A0"},
-    {"shift_id": 8,  "shift_name": "生活班1", "shift_code": "B1", "time_start": "07:00", "time_end": "16:00", "color_hex": "#A0B4D4"},
-    {"shift_id": 9,  "shift_name": "生活班1", "shift_code": "C1", "time_start": "10:00", "time_end": "19:00", "color_hex": "#A0D4A0"},
-    {"shift_id": 10, "shift_name": "生活班1", "shift_code": "C2", "time_start": "11:00", "time_end": "20:00", "color_hex": "#B4D4A0"},
+    {"shift_id": 8,  "shift_name": "生活班1", "shift_code": "B",  "time_start": "07:00", "time_end": "16:00", "color_hex": "#A0B4D4"},
+    {"shift_id": 9,  "shift_name": "生活班1", "shift_code": "C",  "time_start": "10:00", "time_end": "19:00", "color_hex": "#A0D4A0"},
+    {"shift_id": 10, "shift_name": "生活班1", "shift_code": "Ⓒ",  "time_start": "11:00", "time_end": "20:00", "color_hex": "#B4D4A0"},
     {"shift_id": 11, "shift_name": "生活班1", "shift_code": "DG", "time_start": "08:30", "time_end": "17:30", "color_hex": "#D4D4A0"},
     {"shift_id": 12, "shift_name": "生活班1", "shift_code": "P",  "time_start": None,    "time_end": None,    "color_hex": "#D4D4D4"},
     # 生活班2
     {"shift_id": 13, "shift_name": "生活班2", "shift_code": "A",  "time_start": "15:30", "time_end": "09:30", "color_hex": "#D4A0A0"},
-    {"shift_id": 14, "shift_name": "生活班2", "shift_code": "B1", "time_start": "07:00", "time_end": "16:00", "color_hex": "#A0B4D4"},
-    {"shift_id": 15, "shift_name": "生活班2", "shift_code": "C1", "time_start": "10:00", "time_end": "19:00", "color_hex": "#A0D4A0"},
-    {"shift_id": 16, "shift_name": "生活班2", "shift_code": "C2", "time_start": "11:00", "time_end": "20:00", "color_hex": "#B4D4A0"},
+    {"shift_id": 14, "shift_name": "生活班2", "shift_code": "B",  "time_start": "07:00", "time_end": "16:00", "color_hex": "#A0B4D4"},
+    {"shift_id": 15, "shift_name": "生活班2", "shift_code": "C",  "time_start": "10:00", "time_end": "19:00", "color_hex": "#A0D4A0"},
+    {"shift_id": 16, "shift_name": "生活班2", "shift_code": "Ⓒ",  "time_start": "11:00", "time_end": "20:00", "color_hex": "#B4D4A0"},
     {"shift_id": 17, "shift_name": "生活班2", "shift_code": "DG", "time_start": "08:30", "time_end": "17:30", "color_hex": "#D4D4A0"},
     {"shift_id": 18, "shift_name": "生活班2", "shift_code": "P",  "time_start": None,    "time_end": None,    "color_hex": "#D4D4D4"},
     # 清掃
@@ -129,7 +129,7 @@ SHIFT_MASTER_SEED: list[dict[str, Any]] = [
     # 夜勤
     {"shift_id": 20, "shift_name": "夜勤",   "shift_code": "Y",  "time_start": "15:30", "time_end": "09:30", "color_hex": "#D4A0D4"},
     # 宿直
-    {"shift_id": 21, "shift_name": "宿直",   "shift_code": "B2", "time_start": None,    "time_end": "09:30", "color_hex": "#FFD6A0"},
+    {"shift_id": 21, "shift_name": "宿直",   "shift_code": "Ⓑ",  "time_start": None,    "time_end": "09:30", "color_hex": "#FFD6A0"},
 ]
 
 
@@ -233,10 +233,10 @@ EMPLOYEE_SEED: list[dict[str, Any]] = [
 
 # 職員別担当可能シフト（shift_id リスト）
 # 戸外班:1-6, 生活班1:7-12, 生活班2:13-18, 清掃:19, 夜勤:20, 宿直:21
-# B=B1(2,8,14), C=C1(3,9,15), C2(4,10,16), D=DG(5,11,17), P(6,12,18,19), Y=20, B2=21
-_B_IDS = [2, 8, 14]   # B1 各班
-_C1_IDS = [3, 9, 15]  # C1 各班
-_C2_IDS = [4, 10, 16] # C2 各班
+# B(2,8,14), C(3,9,15), Ⓒ(4,10,16), DG(5,11,17), P(6,12,18,19), Y=20, Ⓑ=21
+_B_IDS = [2, 8, 14]   # B 各班
+_C1_IDS = [3, 9, 15]  # C 各班
+_C2_IDS = [4, 10, 16] # Ⓒ 各班
 _DG_IDS = [5, 11, 17] # DG 各班
 _P_IDS  = [6, 12, 18, 19]  # P 各班 + 清掃
 _Y_ID   = [20]

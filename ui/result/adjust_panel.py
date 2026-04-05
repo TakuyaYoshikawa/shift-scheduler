@@ -179,7 +179,7 @@ class AdjustPanel(QDialog):
             import calendar as cal_mod
             days_in_month = cal_mod.monthrange(self.year, self.month)[1]
             if new_shift_id == 20 and self.day < days_in_month:
-                b2_shifts = [s for s in db.get_all_shifts() if s["shift_code"] == "B2"]
+                b2_shifts = [s for s in db.get_all_shifts() if s["shift_code"] == "Ⓑ"]
                 if b2_shifts:
                     b2_id = b2_shifts[0]["shift_id"]
                     db.delete_shift_result_for_employee_day(
@@ -192,7 +192,7 @@ class AdjustPanel(QDialog):
                         employee_id=self.employee_id,
                         shift_id=b2_id,
                         shift_name="宿直",
-                        shift_code="B2",
+                        shift_code="Ⓑ",
                         sur_name=emp["sur_name"] if emp else None,
                     )
 

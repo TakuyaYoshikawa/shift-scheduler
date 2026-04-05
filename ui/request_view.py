@@ -36,17 +36,17 @@ COLOR_VACATION  = QColor("#D0D0D0")
 # シフトコード → 色
 SHIFT_COLORS: dict[str, QColor] = {
     "Y":  QColor("#D4A0D4"),
-    "B2": QColor("#FFD6A0"),
-    "B1": QColor("#A0B4D4"),
-    "C1": QColor("#A0D4A0"),
-    "C2": QColor("#B4D4A0"),
+    "Ⓑ":  QColor("#FFD6A0"),
+    "B":  QColor("#A0B4D4"),
+    "C":  QColor("#A0D4A0"),
+    "Ⓒ":  QColor("#B4D4A0"),
     "DG": QColor("#D4D4A0"),
     "P":  QColor("#D4D4D4"),
     "A":  QColor("#D4A0A0"),
     "休": QColor("#D0D0D0"),
 }
 
-SHIFT_CHOICES = ["", "Y", "B1", "C1", "C2", "DG", "A", "P", "休暇"]
+SHIFT_CHOICES = ["", "Y", "B", "C", "Ⓒ", "DG", "A", "P", "Ⓑ", "休暇"]
 
 WEEKDAY_LABELS = ["月", "火", "水", "木", "金", "土", "日"]
 

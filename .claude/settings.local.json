@@ -11,7 +11,11 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(/c/Users/takuy/AppData/Local/Programs/Python/Python312/python.exe utils/excel_import.py --seed)",
-      "Bash(/c/Users/takuy/AppData/Local/Programs/Python/Python312/python.exe -c ':*)"
+      "Bash(/c/Users/takuy/AppData/Local/Programs/Python/Python312/python.exe -c ':*)",
+      "Bash(/c/Users/takuy/AppData/Local/Programs/Python/Python312/python.exe main.py)",
+      "Bash(/c/Users/takuy/AppData/Local/Programs/Python/Python312/python.exe -)",
+      "Bash(/c/Users/takuy/AppData/Local/Programs/Python/Python312/python.exe migrate_shift_codes.py)",
+      "Bash(grep -n \"\\\\\\\\\\\\\\\\nC1\\\\|\\\\\\\\\\\\\\\\nC2\\\\|\\\\\\\\\\\\\\\\nB2\" /c/Users/takuy/Documents/python/member-shift-app/ui/result/han_view.py)"
     ]
   }
 }
