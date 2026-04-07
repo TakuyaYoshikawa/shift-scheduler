@@ -14,3 +14,4 @@ venv/
 *.egg-info/
 dist/
 build/
+!assets/initial.db

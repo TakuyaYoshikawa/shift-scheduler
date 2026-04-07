@@ -175,8 +175,33 @@ CREATE TABLE IF NOT EXISTS import_log (
 """
 
 
+def _initial_db_path() -> Path | None:
+    """同梱の初期DBパスを返す。PyInstaller (_MEIPASS) と通常実行の両方に対応。"""
+    import sys
+    # PyInstaller exe 内: _MEIPASS/assets/initial.db
+    base = getattr(sys, "_MEIPASS", None)
+    if base:
+        p = Path(base) / "assets" / "initial.db"
+        if p.exists():
+            return p
+    # 通常実行: プロジェクトルート/assets/initial.db
+    p = Path(__file__).resolve().parent.parent / "assets" / "initial.db"
+    if p.exists():
+        return p
+    return None
+
+
 def init_db() -> None:
-    """スキーマを初期化する。初回起動時に呼ぶ。"""
+    """DBを初期化する。初回起動時（DBファイルが存在しない場合）は初期DBをコピーする。"""
+    db_path = get_db_path()
+
+    # 初回起動: DBが存在しない場合は同梱の初期DBをコピー
+    if not db_path.exists():
+        initial = _initial_db_path()
+        if initial:
+            shutil.copy2(initial, db_path)
+            logger.info("初期DBをコピーしました: %s -> %s", initial, db_path)
+
     with get_conn() as conn:
         conn.executescript(SCHEMA_SQL)
         # マイグレーション: is_deleted 列が存在しない場合に追加
